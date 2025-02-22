@@ -9,7 +9,7 @@ import { SubjectForm } from "@/components/forms/subject-form";
 import type { Subject } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { API_BASE_URL } from "@/lib/constants";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/api-request";
 
 export default function Subjects() {
