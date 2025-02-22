@@ -51,7 +51,6 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
       } else {
         await apiRequest("POST", API_BASE_URL+"/api/create-course", data);
       }
-      console.log(course)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-courses"] });
@@ -80,7 +79,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-          className="space-y-4"
+          className="grid grid-cols-2 gap-4" // Added grid layout for two columns
         >
           <FormField
             control={form.control}
@@ -104,7 +103,6 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
                 <FormControl>
                   <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                     <option value="">Select Board</option>
-                    {/* Assuming 'boards' is an array of board names */}
                     {boards.map(board => (
                       <option key={board} value={board}>{board}</option>
                     ))}
@@ -121,9 +119,8 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                     <option value="">Select Status</option>
-                    {/* Assuming 'boards' is an array of board names */}
                     {statuses.map(status => (
                       <option key={status} value={status}>{status}</option>
                     ))}
@@ -140,7 +137,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               <FormItem>
                 <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
-                  <ImageUpload 
+                  <ImageUpload
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -149,7 +146,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="col-span-2"> {/* spans both columns */}
             {course ? "Update" : "Create"}
           </Button>
         </form>
