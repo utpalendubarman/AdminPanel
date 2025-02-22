@@ -41,6 +41,19 @@ export const lessons = pgTable("lessons", {
   thumbnail: text("thumbnail").notNull()
 });
 
+export const contentBlocks = pgTable("content_blocks", {
+  id: uuid("block_id").defaultRandom().primaryKey(),
+  lesson_id: text("lesson_id").notNull(),
+  order: integer("order").notNull(),
+  image_url: text("image_url"),
+  content: text("content"),
+  created_at: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+});
+
+export const insertContentBlockSchema = createInsertSchema(contentBlocks);
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type InsertContentBlock = z.infer<typeof insertContentBlockSchema>;
+
 export const teachers = pgTable("teachers", {
   id: serial("teacher_id").primaryKey(),
   name: text("name").notNull(),

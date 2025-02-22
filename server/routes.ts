@@ -163,6 +163,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ success: true });
   });
 
+  // Content Blocks
+  app.post("/api/list-content-blocks", async (req, res) => {
+    const { lesson_id } = await z.object({ lesson_id: z.string() }).parseAsync(req.body);
+    const blocks = await storage.listContentBlocks(lesson_id);
+    res.json(blocks);
+  });
+
+  app.post("/api/create-content-block", async (req, res) => {
+    const data = await insertContentBlockSchema.parseAsync(req.body);
+    const block = await storage.createContentBlock(data);
+    res.json(block);
+  });
+
+  app.post("/api/edit-content-block", async (req, res) => {
+    const { block_id, ...data } = await insertContentBlockSchema.extend({
+      block_id: z.string()
+    }).parseAsync(req.body);
+    const block = await storage.updateContentBlock(block_id, data);
+    res.json(block);
+  });
+
+  app.post("/api/delete-content-block", async (req, res) => {
+    const { block_id } = await z.object({ block_id: z.string() }).parseAsync(req.body);
+    await storage.deleteContentBlock(block_id);
+    res.json({ success: true });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
