@@ -46,6 +46,13 @@ export default function Lessons() {
             >
               Edit
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = `/lessons/${lesson.id}/content`}
+            >
+              Content Blocks
+            </Button>
           </div>
         );
       },
