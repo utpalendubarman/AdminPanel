@@ -13,6 +13,7 @@ import Teachers from "@/pages/teachers";
 import Users from "@/pages/users";
 import Conversations from "@/pages/conversations";
 import AdminProfile from "@/pages/admin-profile";
+import LessonContent from "@/pages/lesson-content"; // Import added here
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
             <Route path="/courses" component={Courses} />
             <Route path="/subjects" component={Subjects} />
             <Route path="/lessons" component={Lessons} />
+            <Route path="/lessons/:lessonId/content" component={LessonContent} /> {/* Added route */}
             <Route path="/teachers" component={Teachers} />
             <Route path="/users" component={Users} />
             <Route path="/conversations" component={Conversations} />
