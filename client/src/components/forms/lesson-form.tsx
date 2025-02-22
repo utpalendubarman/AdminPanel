@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
   DialogContent,
   DialogHeader,
@@ -150,9 +151,12 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             name="thumbnail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thumbnail URL</FormLabel>
+                <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <ImageUpload 
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
