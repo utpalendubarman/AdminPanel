@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { useEffect } from "react";
 
 interface CourseFormProps {
   course?: Course | null;
@@ -33,13 +35,25 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
 
   const form = useForm<InsertCourse>({
     resolver: zodResolver(insertCourseSchema),
-    defaultValues: course || {
+    defaultValues: {
       course_name: "",
       board_name: "",
       status: "Active",
       thumbnail: "",
     },
   });
+
+  // Update form when course changes
+  useEffect(() => {
+    if (course) {
+      form.reset({
+        course_name: course.course_name,
+        board_name: course.board_name,
+        status: course.status,
+        thumbnail: course.thumbnail,
+      });
+    }
+  }, [course, form]);
 
   const mutation = useMutation({
     mutationFn: async (data: InsertCourse) => {
@@ -67,10 +81,12 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
       });
     },
   });
-  const boards=['CBSE','ICSE','ISC','IGCSE','WBBSE']
-  const statuses=['Active','Inactive']
+
+  const boards = ['CBSE', 'ICSE', 'ISC', 'IGCSE', 'WBBSE'];
+  const statuses = ['Active', 'Inactive'];
+
   return (
-    <DialogContent>
+    <DialogContent className="max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>
           {course ? "Edit Course" : "Create Course"}
@@ -79,7 +95,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-          className="grid grid-cols-2 gap-4" // Added grid layout for two columns
+          className="grid grid-cols-2 gap-4"
         >
           <FormField
             control={form.control}
@@ -99,9 +115,9 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
             name="board_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Board Name</FormLabel>
+                <FormLabel>Board</FormLabel>
                 <FormControl>
-                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     <option value="">Select Board</option>
                     {boards.map(board => (
                       <option key={board} value={board}>{board}</option>
@@ -119,7 +135,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     <option value="">Select Status</option>
                     {statuses.map(status => (
                       <option key={status} value={status}>{status}</option>
@@ -134,7 +150,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
             control={form.control}
             name="thumbnail"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-2">
                 <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
                   <ImageUpload
@@ -146,7 +162,7 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="col-span-2"> {/* spans both columns */}
+          <Button type="submit" className="col-span-2">
             {course ? "Update" : "Create"}
           </Button>
         </form>
