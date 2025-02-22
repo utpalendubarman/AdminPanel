@@ -49,7 +49,7 @@ export default function Lessons() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.location.href = `/lessons/${lesson.id}/content`}
+              onClick={() => window.location.href = `/lessons/${row.original.id}/content`}
             >
               Content Blocks
             </Button>
