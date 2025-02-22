@@ -12,6 +12,7 @@ import Lessons from "@/pages/lessons";
 import Teachers from "@/pages/teachers";
 import Users from "@/pages/users";
 import Conversations from "@/pages/conversations";
+import AdminProfile from "@/pages/admin-profile";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
             <Route path="/teachers" component={Teachers} />
             <Route path="/users" component={Users} />
             <Route path="/conversations" component={Conversations} />
+            <Route path="/admin-profile" component={AdminProfile} />
             <Route component={NotFound} />
           </Switch>
         </main>
