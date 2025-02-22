@@ -11,6 +11,7 @@ import Subjects from "@/pages/subjects";
 import Lessons from "@/pages/lessons";
 import Teachers from "@/pages/teachers";
 import Users from "@/pages/users";
+import Conversations from "@/pages/conversations";
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
             <Route path="/lessons" component={Lessons} />
             <Route path="/teachers" component={Teachers} />
             <Route path="/users" component={Users} />
+            <Route path="/conversations" component={Conversations} />
             <Route component={NotFound} />
           </Switch>
         </main>
