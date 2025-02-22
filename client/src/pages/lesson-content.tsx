@@ -1,17 +1,23 @@
 
-import { useParams } from "react-router-dom";
-import { ContentBlocks } from "@/components/lessons/content-blocks";
+import { useRoute, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LessonContent() {
-  const { lessonId } = useParams();
-  
-  if (!lessonId) {
-    return <div>Lesson ID not found</div>;
-  }
+  const [, params] = useRoute("/lessons/:lessonId/content");
+  const lessonId = params?.lessonId;
 
   return (
-    <div className="p-6">
-      <ContentBlocks lessonId={lessonId} />
+    <div className="container mx-auto p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Lesson Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Lesson ID: {lessonId}</p>
+          {/* Add your content management UI here */}
+        </CardContent>
+      </Card>
     </div>
   );
 }
