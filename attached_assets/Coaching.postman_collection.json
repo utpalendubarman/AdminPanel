@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "11038f2f-17be-4d59-9ae8-a519f0981f34",
+		"name": "Coaching",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25685154"
+	},
+	"item": [
+		{
+			"name": "list-teachers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/api/list-teachers"
+			},
+			"response": []
+		},
+		{
+			"name": "all-courses",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/api/list-courses"
+			},
+			"response": []
+		},
+		{
+			"name": "create-course",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"course_name\":\"zxx\",\n\"board_name\":\"xcv\",\n\"status\":\"Active\",\n\"thumbnail\":\"asdasdasdasd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/create-course"
+			},
+			"response": []
+		},
+		{
+			"name": "get-course",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"ec6a283e-923d-450c-a180-e2d75fa80464\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/get-course"
+			},
+			"response": []
+		},
+		{
+			"name": "delete-course",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"ec6a283e-923d-450c-a180-e2d75fa80464\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/delete-course"
+			},
+			"response": []
+		},
+		{
+			"name": "list-subjects",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/api/list-subjects"
+			},
+			"response": []
+		},
+		{
+			"name": "create-subject",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject_name\":\"xxxx\",\n    \"subject_image\":\"xxxx\",\n    \"board\":\"xxxx\",\n    \"course_id\":\"xxxx\",\n    \"status\":\"xxxx\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/create-subject"
+			},
+			"response": []
+		},
+		{
+			"name": "edit-course",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"2cad5fae-b129-4dcc-bed8-cb80223d4da8\",\n    \"course_name\":\"zxx\",\n    \"board_name\":\"xcv\",\n    \"status\":\"Active\",\n    \"thumbnail\":\"asdasdasdasd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/edit-course"
+			},
+			"response": []
+		},
+		{
+			"name": "edit-subject",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject_id\":1,\n    \"subject_name\":\"xxasdfgxx\",\n    \"subject_image\":\"xxxx\",\n    \"board\":\"xxxx\",\n    \"course_id\":\"xxxx\",\n    \"status\":\"xxxx\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/edit-subject"
+			},
+			"response": []
+		},
+		{
+			"name": "create-teacher",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Utpalendu Barman\",\n    \"bio\":\"Description\",\n    \"short_bio\":\"Description\",\n    \"image\":\"https://google.com/logo.png\",\n    \"prompt\":\"You are a senior English Teacher\",\n    \"greeting_messages\":\"Hi I am Utpal your virtual teacher\",\n    \"voice\":\"Male\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/create-teacher"
+			},
+			"response": []
+		},
+		{
+			"name": "get-teacher",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"model_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/get-teacher"
+			},
+			"response": []
+		},
+		{
+			"name": "edit-teacher",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"model_id\":2,\n    \"name\":\"Utpalendu\",\n    \"bio\":\"Description\",\n    \"short_bio\":\"Description\",\n    \"image\":\"https://google.com/logo.png\",\n    \"prompt\":\"You are a senior English Teacher\",\n    \"greeting_messages\":\"Hi I am Utpal your virtual teacher\",\n    \"voice\":\"Male\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/edit-teacher"
+			},
+			"response": []
+		},
+		{
+			"name": "delete-teacher",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"model_id\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/delete-teacher"
+			},
+			"response": []
+		},
+		{
+			"name": "list-lessons",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/api/list-lessons"
+			},
+			"response": []
+		},
+		{
+			"name": "create-lesson",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lesson_name\":\"Test\",\n    \"board\":\"Test\",\n    \"status\":\"Test\",\n    \"subject_id\":\"Test\",\n    \"course_id\":\"Test\",\n    \"thumbnail\":\"Test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/create-lesson"
+			},
+			"response": []
+		},
+		{
+			"name": "get-lesson",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lesson_id\":\"e562a676-38d7-4432-b711-8371320d52c6\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/get-lesson"
+			},
+			"response": []
+		},
+		{
+			"name": "edit-lesson",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lesson_id\": \"e562a676-38d7-4432-b711-8371320d52c6\",\n    \"board\": \"Test\",\n    \"course_id\": \"Test\",\n    \"lesson_name\": \"Test\",\n    \"status\": \"Test\",\n    \"subject_id\": \"Test\",\n    \"thumbnail\": \"Test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/edit-lesson"
+			},
+			"response": []
+		},
+		{
+			"name": "delete-lesson",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lesson_id\":\"e562a676-38d7-4432-b711-8371320d52c6\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/delete-lesson"
+			},
+			"response": []
+		},
+		{
+			"name": "list-users",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/api/list-users"
+			},
+			"response": []
+		},
+		{
+			"name": "create-user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"xxx\",\n    \"type\":\"yyy\",\n    \"email\":\"zzz\",\n    \"phone\":\"aaa\",\n    \"school\":\"bbb\",\n    \"board\":\"ccc\",\n    \"profile_photo\":\"ddd\",\n    \"class_id\":\"fff\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/create-user"
+			},
+			"response": []
+		},
+		{
+			"name": "get-user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"identifier\":\"72bb64ed-33e1-48e2-9e97-f8c4ebad57b7\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/get-user"
+			},
+			"response": []
+		},
+		{
+			"name": "edit-user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"identifier\":\"72bb64ed-33e1-48e2-9e97-f8c4ebad57b7\",\n    \"name\":\"xxx\",\n    \"type\":\"yyy\",\n    \"email\":\"zzz\",\n    \"phone\":\"aaa\",\n    \"school\":\"bbb\",\n    \"board\":\"ccc\",\n    \"profile_photo\":\"ddd\",\n    \"class_id\":\"fff\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/api/edit-user"
+			},
+			"response": []
+		}
+	]
+}
