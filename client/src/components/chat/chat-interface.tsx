@@ -50,6 +50,10 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
   const handleSend = () => {
     if (!inputValue.trim()) return;
 
+    // Play send message sound
+    const audio = new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_46cecae684.mp3");
+    audio.play();
+
     // Add user message
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -72,7 +76,8 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
 
   const playTTS = (text: string) => {
     // In a real implementation, this would call a TTS service
-    console.log("Playing TTS:", text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
   };
 
   return (
