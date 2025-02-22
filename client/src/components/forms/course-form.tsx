@@ -52,6 +52,13 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
         status: course.status,
         thumbnail: course.thumbnail,
       });
+    } else {
+      form.reset({
+        course_name: "",
+        board_name: "",
+        status: "Active",
+        thumbnail: "",
+      });
     }
   }, [course, form]);
 
