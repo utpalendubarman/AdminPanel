@@ -20,6 +20,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default function Courses() {
   const [open, setOpen] = useState(false);
@@ -28,15 +29,15 @@ export default function Courses() {
   const { toast } = useToast();
 
   const { data: courses = [] } = useQuery<Course[]>({ 
-    queryKey: ["/api/list-courses"]
+    queryKey: [API_BASE_URL+"/api/list-courses"]
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("POST", "/api/delete-course", { course_id: id });
+      await apiRequest("POST", API_BASE_URL+"/api/delete-course", { course_id: id });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/list-courses"] });
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-courses"] });
       toast({
         title: "Course deleted successfully",
       });
@@ -53,9 +54,26 @@ export default function Courses() {
 
   const columns: ColumnDef<Course>[] = [
     {
+      accessorKey: "thumbnail",
+      header: "Thumbnail",
+      cell: ({ row }) => (
+        <div className="relative w-12 h-12 rounded overflow-hidden">
+          <img 
+            src={row.original.thumbnail} 
+            alt={row.original.course_name}
+            className="object-cover w-full h-full"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://placehold.co/48x48?text=No+Image";
+            }}
+          />
+        </div>
+      ),
+    },
+    {
       accessorKey: "course_name",
       header: "Course Name",
     },
+
     {
       accessorKey: "board_name",
       header: "Board",
@@ -74,22 +92,6 @@ export default function Courses() {
       ),
     },
     {
-      accessorKey: "thumbnail",
-      header: "Thumbnail",
-      cell: ({ row }) => (
-        <div className="relative w-12 h-12 rounded overflow-hidden">
-          <img 
-            src={row.original.thumbnail} 
-            alt={row.original.course_name}
-            className="object-cover w-full h-full"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://placehold.co/48x48?text=No+Image";
-            }}
-          />
-        </div>
-      ),
-    },
-    {
       id: "actions",
       cell: ({ row }) => {
         const course = row.original;
@@ -99,6 +101,7 @@ export default function Courses() {
               variant="ghost"
               size="sm"
               onClick={() => {
+                console.log(course)
                 setEditingCourse(course);
                 setOpen(true);
               }}
@@ -109,11 +112,11 @@ export default function Courses() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setDeleteId(course.id)}
+              onClick={() => setDeleteId(course.course_id) }
               className="text-red-500 hover:text-red-700"
             >
               <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Delete</span>
+              <span className="sr-only">Delete now</span>
             </Button>
           </div>
         );
@@ -159,7 +162,7 @@ export default function Courses() {
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the
-              course.
+              course?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

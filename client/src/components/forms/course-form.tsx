@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/lib/constants";
 import {
   Form,
   FormControl,
@@ -43,16 +44,17 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: InsertCourse) => {
       if (course) {
-        await apiRequest("POST", "/api/edit-course", {
-          course_id: course.id,
+        await apiRequest("POST", API_BASE_URL+"/api/edit-course", {
+          course_id: course.course_id,
           ...data,
         });
       } else {
-        await apiRequest("POST", "/api/create-course", data);
+        await apiRequest("POST", API_BASE_URL+"/api/create-course", data);
       }
+      console.log(course)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/list-courses"] });
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-courses"] });
       toast({
         title: `Course ${course ? "updated" : "created"} successfully`,
       });
@@ -66,7 +68,8 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
       });
     },
   });
-
+  const boards=['CBSE','ICSE','ISC','IGCSE','WBBSE']
+  const statuses=['Active','Inactive']
   return (
     <DialogContent>
       <DialogHeader>
@@ -99,7 +102,13 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               <FormItem>
                 <FormLabel>Board Name</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="">Select Board</option>
+                    {/* Assuming 'boards' is an array of board names */}
+                    {boards.map(board => (
+                      <option key={board} value={board}>{board}</option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +121,13 @@ export function CourseForm({ course, onSuccess }: CourseFormProps) {
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="">Select Status</option>
+                    {/* Assuming 'boards' is an array of board names */}
+                    {statuses.map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

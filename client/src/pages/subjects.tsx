@@ -7,13 +7,14 @@ import { Plus } from "lucide-react";
 import { SubjectForm } from "@/components/forms/subject-form";
 import type { Subject } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default function Subjects() {
   const [open, setOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
 
   const { data: subjects = [] } = useQuery({ 
-    queryKey: ["/api/list-subjects"]
+    queryKey: [API_BASE_URL+"/api/list-subjects"]
   });
 
   const columns: ColumnDef<Subject>[] = [

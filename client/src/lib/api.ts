@@ -1,6 +1,5 @@
 
 import { API_BASE_URL } from './constants';
-
 export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -9,6 +8,8 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
       ...options.headers,
     },
   });
+  console.log(`${API_BASE_URL}${endpoint}`)
+
   
   if (!response.ok) {
     throw new Error(`API request failed: ${response.statusText}`);

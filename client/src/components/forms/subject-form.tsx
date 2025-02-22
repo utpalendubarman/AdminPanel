@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { API_BASE_URL } from "@/lib/constants";
 
 interface SubjectFormProps {
   subject?: Subject | null;
@@ -43,16 +44,16 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: typeof form.getValues) => {
       if (subject) {
-        await apiRequest("POST", "/api/edit-subject", {
+        await apiRequest("POST", API_BASE_URL+"/api/edit-subject", {
           subject_id: subject.id,
           ...data,
         });
       } else {
-        await apiRequest("POST", "/api/create-subject", data);
+        await apiRequest("POST", API_BASE_URL+"/api/create-subject", data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/list-subjects"] });
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-subjects"] });
       toast({
         title: `Subject ${subject ? "updated" : "created"} successfully`,
       });

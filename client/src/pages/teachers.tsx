@@ -7,13 +7,13 @@ import { Plus } from "lucide-react";
 import { TeacherForm } from "@/components/forms/teacher-form";
 import type { Teacher } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
-
+import { API_BASE_URL } from "@/lib/constants";
 export default function Teachers() {
   const [open, setOpen] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
 
   const { data: teachers = [] } = useQuery({ 
-    queryKey: ["/api/list-teachers"]
+    queryKey: [API_BASE_URL+"/api/list-teachers"]
   });
 
   const columns: ColumnDef<Teacher>[] = [

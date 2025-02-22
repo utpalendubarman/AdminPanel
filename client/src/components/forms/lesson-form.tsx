@@ -21,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { API_BASE_URL } from "@/lib/constants";
 
 interface LessonFormProps {
   lesson?: Lesson | null;
@@ -45,16 +46,16 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: typeof form.getValues) => {
       if (lesson) {
-        await apiRequest("POST", "/api/edit-lesson", {
+        await apiRequest("POST", API_BASE_URL+"/api/edit-lesson", {
           lesson_id: lesson.id,
           ...data,
         });
       } else {
-        await apiRequest("POST", "/api/create-lesson", data);
+        await apiRequest("POST", API_BASE_URL+"/api/create-lesson", data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/list-lessons"] });
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
       toast({
         title: `Lesson ${lesson ? "updated" : "created"} successfully`,
       });

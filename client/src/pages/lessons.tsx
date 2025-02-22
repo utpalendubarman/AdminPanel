@@ -7,13 +7,14 @@ import { Plus } from "lucide-react";
 import { LessonForm } from "@/components/forms/lesson-form";
 import type { Lesson } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default function Lessons() {
   const [open, setOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   const { data: lessons = [] } = useQuery({ 
-    queryKey: ["/api/list-lessons"]
+    queryKey: [API_BASE_URL+"/api/list-lessons"]
   });
 
   const columns: ColumnDef<Lesson>[] = [

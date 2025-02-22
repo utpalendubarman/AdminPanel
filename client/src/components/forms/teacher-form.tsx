@@ -22,6 +22,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { API_BASE_URL } from "@/lib/constants";
 
 interface TeacherFormProps {
   teacher?: Teacher | null;
@@ -47,16 +48,16 @@ export function TeacherForm({ teacher, onSuccess }: TeacherFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: typeof form.getValues) => {
       if (teacher) {
-        await apiRequest("POST", "/api/edit-teacher", {
+        await apiRequest("POST", API_BASE_URL+"/api/edit-teacher", {
           model_id: teacher.id,
           ...data,
         });
       } else {
-        await apiRequest("POST", "/api/create-teacher", data);
+        await apiRequest("POST", API_BASE_URL+"/api/create-teacher", data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/list-teachers"] });
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-teachers"] });
       toast({
         title: `Teacher ${teacher ? "updated" : "created"} successfully`,
       });

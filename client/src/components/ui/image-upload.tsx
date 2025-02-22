@@ -39,7 +39,7 @@ export function ImageUpload({ value, onChange, className }: ImageUploadProps) {
 
       // Upload to Cloudinary
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/doog8iipa/image/upload`,
         {
           method: 'POST',
           body: formData
