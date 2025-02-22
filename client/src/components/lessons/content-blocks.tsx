@@ -1,34 +1,31 @@
-
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { DataTable } from "@/components/shared/data-table";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ContentBlockForm } from "@/components/forms/content-block-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import type { ContentBlock } from "@shared/schema";
-import { API_BASE_URL } from "@/lib/constants";
-import { useToast } from "@/components/ui/use-toast";
 
 interface ContentBlocksProps {
   lessonId: string;
 }
 
-// Dummy data for testing
 const dummyBlocks: ContentBlock[] = [
   {
     id: "1",
     lesson_id: "test-lesson",
     order: 1,
     image_url: "https://picsum.photos/200/300",
-    content: "This is an introduction to the lesson",
+    content: "This is the first content block with some sample text for testing purposes.",
     created_at: new Date().toISOString()
   },
   {
     id: "2",
     lesson_id: "test-lesson",
     order: 2,
-    image_url: "https://picsum.photos/200/300",
-    content: "This is the main content of the lesson",
+    image_url: "https://picsum.photos/200/301",
+    content: "This is another content block with different content to show multiple items.",
     created_at: new Date().toISOString()
   }
 ];
@@ -39,74 +36,56 @@ export function ContentBlocks({ lessonId }: ContentBlocksProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Use dummy data instead of API call for now
-  const blocks = dummyBlocks;
-
-  const deleteMutation = useMutation({
-    mutationFn: async (blockId: string) => {
-      // Simulate API call
-      console.log("Deleting block:", blockId);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Block deleted successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ["content-blocks"] });
-    }
-  });
-
   const columns = [
     {
-      header: "Order",
       accessorKey: "order",
+      header: "Order"
     },
     {
-      header: "Preview",
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-2">
-          {row.original.image_url && (
-            <img 
-              src={row.original.image_url} 
-              alt="Content preview" 
-              className="w-20 h-20 object-cover rounded"
-            />
-          )}
-          <p className="text-sm truncate max-w-[300px]">
-            {row.original.content}
-          </p>
-        </div>
-      ),
+      accessorKey: "content",
+      header: "Content"
     },
     {
-      header: "Created At",
       accessorKey: "created_at",
-      cell: ({ row }) => new Date(row.original.created_at).toLocaleDateString(),
+      header: "Created At"
     },
     {
       id: "actions",
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSelectedBlock(row.original);
-              setIsDialogOpen(true);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => deleteMutation.mutate(row.original.id)}
-          >
-            Delete
-          </Button>
-        </div>
-      ),
-    },
+      cell: ({ row }) => {
+        const block = row.original;
+        return (
+          <div className="flex gap-2">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setSelectedBlock(block)}
+                >
+                  Edit
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDelete(block.id)}
+            >
+              Delete
+            </Button>
+          </div>
+        );
+      }
+    }
   ];
+
+  const handleDelete = async (blockId: string) => {
+    // In real implementation, this would be an API call
+    console.log("Deleting block:", blockId);
+    toast({
+      title: "Block deleted successfully",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -136,7 +115,7 @@ export function ContentBlocks({ lessonId }: ContentBlocksProps) {
 
       <DataTable
         columns={columns}
-        data={blocks}
+        data={dummyBlocks}
         searchKey="content"
       />
     </div>
