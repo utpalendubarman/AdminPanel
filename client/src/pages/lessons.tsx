@@ -53,7 +53,7 @@ export default function Lessons() {
         const lesson = row.original;
         const deleteMutation = useMutation({
           mutationFn: async () => {
-            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.lesson_id });
+            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
           },
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });

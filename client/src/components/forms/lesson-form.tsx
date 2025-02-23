@@ -46,7 +46,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
 
   const form = useForm({
     resolver: zodResolver(insertLessonSchema),
-    defaultValues: {
+    values: {
       lesson_name: lesson?.lesson_name || "",
       board: lesson?.board || "",
       status: lesson?.status || "Active",
