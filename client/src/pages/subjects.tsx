@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { DataTable } from "@/components/shared/data-table";
@@ -28,13 +27,13 @@ export default function Subjects() {
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const { toast } = useToast();
 
-  const { data: subjects = [] } = useQuery<Subject[]>({ 
-    queryKey: [API_BASE_URL+"/api/list-subjects"]
+  const { data: subjects = [] } = useQuery<Subject[]>({
+    queryKey: [API_BASE_URL + "/api/list-subjects"],
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (subject_id: string) => {
-      const response = await fetch(API_BASE_URL+"/api/delete-subject", {
+      const response = await fetch(API_BASE_URL + "/api/delete-subject", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject_id }),
@@ -43,7 +42,9 @@ export default function Subjects() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-subjects"] });
+      queryClient.invalidateQueries({
+        queryKey: [API_BASE_URL + "/api/list-subjects"],
+      });
       toast({ title: "Subject deleted successfully" });
       setDeleteId(null);
     },
@@ -58,12 +59,16 @@ export default function Subjects() {
       header: "Thumbnail",
       cell: ({ row }) => (
         <div className="relative w-12 h-12 rounded overflow-hidden">
-          <img 
-            src={row.original.thumbnail || "https://placehold.co/48x48?text=No+Image"} 
+          <img
+            src={
+              row.original.subject_image ||
+              "https://placehold.co/48x48?text=No+Image"
+            }
             alt={row.original.subject_name}
             className="object-cover w-full h-full"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://placehold.co/48x48?text=No+Image";
+              (e.target as HTMLImageElement).src =
+                "https://placehold.co/48x48?text=No+Image";
             }}
           />
         </div>
@@ -116,10 +121,12 @@ export default function Subjects() {
             Manage your educational subjects here
           </p>
         </div>
-        <Button onClick={() => {
-          setEditingSubject(null);
-          setOpen(true);
-        }}>
+        <Button
+          onClick={() => {
+            setEditingSubject(null);
+            setOpen(true);
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Subject
         </Button>
@@ -133,23 +140,29 @@ export default function Subjects() {
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <SubjectForm 
+        <SubjectForm
           subject={editingSubject}
           onSuccess={() => setOpen(false)}
         />
       </Dialog>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the subject.
+              This action cannot be undone. This will permanently delete the
+              subject.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteId && deleteMutation.mutate(deleteId)}>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
