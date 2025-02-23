@@ -79,8 +79,13 @@ export default function Subjects() {
       header: "Subject Name",
     },
     {
-      accessorKey: "course_id",
-      header: "Course ID",
+      id: "course_name",
+      header: "Course Name",
+      cell: ({ row }) => {
+        const courseId = row.original.course_id;
+        const course = courses.find(c => c.course_id === courseId);
+        return course?.course_name || courseId;
+      }
     },
     {
       accessorKey: "status",
