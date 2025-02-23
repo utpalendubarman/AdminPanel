@@ -53,7 +53,7 @@ export default function Lessons() {
         const lesson = row.original;
         const deleteMutation = useMutation({
           mutationFn: async () => {
-            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
+            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.lesson_id });
           },
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
@@ -61,6 +61,13 @@ export default function Lessons() {
               title: "Lesson deleted successfully",
             });
           },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Error deleting lesson",
+              description: error.message,
+            });
+          }
         });
 
         return (

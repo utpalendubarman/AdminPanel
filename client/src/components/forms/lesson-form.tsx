@@ -46,13 +46,13 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
 
   const form = useForm({
     resolver: zodResolver(insertLessonSchema),
-    defaultValues: lesson || {
-      lesson_name: "",
-      board: "",
-      status: "Active",
-      subject_id: "",
-      course_id: "",
-      thumbnail: "",
+    defaultValues: {
+      lesson_name: lesson?.lesson_name || "",
+      board: lesson?.board || "",
+      status: lesson?.status || "Active",
+      subject_id: lesson?.subject_id || "",
+      course_id: lesson?.course_id || "",
+      thumbnail: lesson?.thumbnail || "",
     },
   });
 
