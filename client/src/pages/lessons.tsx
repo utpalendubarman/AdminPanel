@@ -2,6 +2,13 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { DataTable } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
+import { MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Dialog } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { LessonForm } from "@/components/forms/lesson-form";
@@ -51,26 +58,50 @@ export default function Lessons() {
       id: "actions",
       cell: ({ row }) => {
         const lesson = row.original;
-        const deleteMutation = useMutation({
-          mutationFn: async () => {
-            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
-          },
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
-            toast({
-              title: "Lesson deleted successfully",
-            });
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Error deleting lesson",
-              description: error.message,
-            });
-          }
-        });
-
         return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setEditingLesson(lesson)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this lesson?")) {
+                    const deleteMutation = useMutation({
+                      mutationFn: async () => {
+                        await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
+                          lesson_id: lesson.lesson_id,
+                        });
+                      },
+                      onSuccess: () => {
+                        queryClient.invalidateQueries({ queryKey: [API_BASE_URL + "/api/list-lessons"] });
+                        toast({
+                          title: "Lesson deleted successfully",
+                        });
+                      },
+                      onError: (error) => {
+                        toast({
+                          variant: "destructive",
+                          title: "Error deleting lesson",
+                          description: error.message,
+                        });
+                      },
+                    });
+                    deleteMutation.mutate();
+                  }
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="flex gap-2">
             <Button
               variant="ghost"
