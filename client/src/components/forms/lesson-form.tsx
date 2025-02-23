@@ -46,6 +46,27 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (!lesson) return;
+      await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
+      toast({
+        title: "Lesson deleted successfully",
+      });
+      onSuccess();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
   const { data: courses = [] } = useQuery<Course[]>({
     queryKey: [API_BASE_URL+"/api/list-courses"],
     queryFn: async () => {
@@ -233,9 +254,24 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="col-span-2">
-            {lesson ? "Update" : "Create"}
-          </Button>
+          <div className="col-span-2 flex justify-between">
+            <Button type="submit">
+              {lesson ? "Update" : "Create"}
+            </Button>
+            {lesson && (
+              <Button 
+                type="button" 
+                variant="destructive"
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to delete this lesson?')) {
+                    deleteMutation.mutate();
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
     </DialogContent>

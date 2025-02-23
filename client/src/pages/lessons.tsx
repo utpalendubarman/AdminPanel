@@ -33,6 +33,13 @@ export default function Lessons() {
       header: "Lesson Name",
     },
     {
+      accessorKey: "thumbnail",
+      header: "Image",
+      cell: ({ row }) => row.original.thumbnail ? (
+        <img src={row.original.thumbnail} alt={row.original.lesson_name} className="w-16 h-16 object-cover rounded" />
+      ) : null
+    },
+    {
       accessorKey: "board",
       header: "Board",
     },
