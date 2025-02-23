@@ -3,7 +3,7 @@ import { useState } from "react";
 import { DataTable } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { SubjectForm } from "@/components/forms/subject-form";
 import type { Subject } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
@@ -12,6 +12,7 @@ import { API_BASE_URL } from "@/lib/constants";
 export default function Subjects() {
   const [open, setOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null); // Added deleteId state
 
   const { data: subjects = [] } = useQuery({ 
     queryKey: [API_BASE_URL+"/api/list-subjects"]
@@ -19,12 +20,28 @@ export default function Subjects() {
 
   const columns: ColumnDef<Subject>[] = [
     {
+      accessorKey: "thumbnail",
+      header: "Thumbnail",
+      cell: ({ row }) => (
+        <div className="relative w-12 h-12 rounded overflow-hidden">
+          <img 
+            src={row.original.thumbnail} 
+            alt={row.original.subject_name}
+            className="object-cover w-full h-full"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://placehold.co/48x48?text=No+Image";
+            }}
+          />
+        </div>
+      ),
+    },
+    {
       accessorKey: "subject_name",
       header: "Subject Name",
     },
     {
-      accessorKey: "board",
-      header: "Board",
+      accessorKey: "course_id",
+      header: "Course ID",
     },
     {
       accessorKey: "status",
@@ -32,23 +49,27 @@ export default function Subjects() {
     },
     {
       id: "actions",
-      cell: ({ row }) => {
-        const subject = row.original;
-        return (
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setEditingSubject(subject);
-                setOpen(true);
-              }}
-            >
-              Edit
-            </Button>
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setEditingSubject(row.original);
+              setOpen(true);
+            }}
+          >
+            <Pencil className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setDeleteId(row.original.subject_id)}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
     },
   ];
 
