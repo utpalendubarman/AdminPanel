@@ -21,8 +21,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { API_BASE_URL } from "@/lib/constants";
 interface SubjectFormProps {
   onSuccess?: () => void;
   subject?: Subject;
@@ -42,13 +48,14 @@ export function SubjectForm({ onSuccess, subject }: SubjectFormProps) {
 
   const { data: courses } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => apiRequest("/api/courses").then((res) => res.json()),
+    queryFn: () =>
+      apiRequest(API_BASE_URL + "/api/list-courses").then((res) => res.json()),
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: Subject) => {
       if (subject) {
-        return apiRequest(`/api/subjects/${subject.id}`, {
+        return apiRequest(`${API_BASE_URL}/api/subjects/${subject.id}`, {
           method: "PUT",
           body: JSON.stringify(values),
         });
@@ -139,10 +146,7 @@ export function SubjectForm({ onSuccess, subject }: SubjectFormProps) {
               <FormItem>
                 <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
-                  <ImageUpload
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+                  <ImageUpload value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,7 +154,11 @@ export function SubjectForm({ onSuccess, subject }: SubjectFormProps) {
           />
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "Loading..." : subject ? "Update Subject" : "Create Subject"}
+            {isPending
+              ? "Loading..."
+              : subject
+                ? "Update Subject"
+                : "Create Subject"}
           </Button>
         </form>
       </Form>
