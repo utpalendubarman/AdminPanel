@@ -59,77 +59,56 @@ export default function Lessons() {
       cell: ({ row }) => {
         const lesson = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4"/>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setEditingLesson(lesson)}>
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => {
-                  if (window.confirm("Are you sure you want to delete this lesson?")) {
-                    const deleteMutation = useMutation({
-                      mutationFn: async () => {
-                        await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
-                          lesson_id: lesson.lesson_id,
-                        });
-                      },
-                      onSuccess: () => {
-                        queryClient.invalidateQueries({ queryKey: [API_BASE_URL + "/api/list-lessons"] });
-                        toast({
-                          title: "Lesson deleted successfully",
-                        });
-                      },
-                      onError: (error) => {
-                        toast({
-                          variant: "destructive",
-                          title: "Error deleting lesson",
-                          description: error.message,
-                        });
-                      },
-                    });
-                    deleteMutation.mutate();
-                  }
-                }}
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setEditingLesson(lesson);
-                setOpen(true);
-              }}
-            >
-              Edit
-            </Button>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4"/>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setEditingLesson(lesson)}>
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to delete this lesson?")) {
+                      const deleteMutation = useMutation({
+                        mutationFn: async () => {
+                          await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
+                            lesson_id: lesson.lesson_id,
+                          });
+                        },
+                        onSuccess: () => {
+                          queryClient.invalidateQueries({ queryKey: [API_BASE_URL + "/api/list-lessons"] });
+                          toast({
+                            title: "Lesson deleted successfully",
+                          });
+                        },
+                        onError: (error) => {
+                          toast({
+                            variant: "destructive",
+                            title: "Error deleting lesson",
+                            description: error.message,
+                          });
+                        },
+                      });
+                      deleteMutation.mutate();
+                    }
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.location.href = `/lessons/${row.original.id}/content`}
+              onClick={() => window.location.href = `/lessons/${lesson.lesson_id}/content`}
             >
               Content Blocks
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to delete this lesson?')) {
-                  deleteMutation.mutate();
-                }
-              }}
-            >
-              Delete
             </Button>
           </div>
         );
