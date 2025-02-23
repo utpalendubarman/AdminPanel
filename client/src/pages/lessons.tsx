@@ -92,14 +92,33 @@ export default function Lessons() {
         const lesson = row.original;
         return (
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setEditingLesson(lesson)}
-            >
-              <Pencil className="w-4 h-4 mr-1" />
-              Edit
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setEditingLesson(lesson)}>
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Are you sure you want to delete this lesson?",
+                      )
+                    ) {
+                      deleteMutation.mutate(lesson.lesson_id);
+                    }
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="outline"
               size="sm"
@@ -107,25 +126,7 @@ export default function Lessons() {
                 (window.location.href = `/lessons/${lesson.lesson_id}/content`)
               }
             >
-              <FolderOpen className="w-4 h-4 mr-1" />
-              Manage Content
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-red-600 hover:text-red-700"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    "Are you sure you want to delete this lesson?",
-                  )
-                ) {
-                  deleteMutation.mutate(lesson.lesson_id);
-                }
-              }}
-            >
-              <Trash2 className="w-4 h-4 mr-1" />
-              Delete
+              Content Blocks
             </Button>
           </div>
         );
