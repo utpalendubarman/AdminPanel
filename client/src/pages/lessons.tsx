@@ -51,6 +51,18 @@ export default function Lessons() {
       id: "actions",
       cell: ({ row }) => {
         const lesson = row.original;
+        const deleteMutation = useMutation({
+          mutationFn: async () => {
+            await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
+          },
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
+            toast({
+              title: "Lesson deleted successfully",
+            });
+          },
+        });
+
         return (
           <div className="flex gap-2">
             <Button
@@ -69,6 +81,17 @@ export default function Lessons() {
               onClick={() => window.location.href = `/lessons/${row.original.id}/content`}
             >
               Content Blocks
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete this lesson?')) {
+                  deleteMutation.mutate();
+                }
+              }}
+            >
+              Delete
             </Button>
           </div>
         );
