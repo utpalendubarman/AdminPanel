@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
 import {
   DialogContent,
   DialogHeader,
@@ -80,7 +82,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-          className="space-y-4"
+          className="grid grid-cols-2 gap-4"
         >
           <FormField
             control={form.control}
@@ -137,15 +139,32 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
           <FormField
             control={form.control}
             name="course_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Course ID</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const { data: courses = [] } = useQuery({ 
+                queryKey: [API_BASE_URL+"/api/list-courses"],
+              });
+              
+              return (
+                <FormItem>
+                  <FormLabel>Course</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.id}>
+                          {course.course_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}
