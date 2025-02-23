@@ -1,22 +1,16 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DataTable } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
-import { MoreHorizontal } from "lucide-react";
+import { Edit, Trash2, FolderOpen, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Dialog } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
-import { LessonForm } from "@/components/forms/lesson-form";
 import type { Lesson } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { API_BASE_URL } from "@/lib/constants";
+import { LessonForm } from "@/components/forms/lesson-form";
 
 export default function Lessons() {
   const [open, setOpen] = useState(false);
@@ -88,37 +82,22 @@ export default function Lessons() {
     },
     {
       id: "actions",
+      header: "Actions",
       cell: ({ row }) => {
         const lesson = row.original;
         return (
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setEditingLesson(lesson)}>
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-600"
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        "Are you sure you want to delete this lesson?",
-                      )
-                    ) {
-                      deleteMutation.mutate(lesson.lesson_id);
-                    }
-                  }}
-                >
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setEditingLesson(lesson);
+                setOpen(true);
+              }}
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -126,7 +105,24 @@ export default function Lessons() {
                 (window.location.href = `/lessons/${lesson.lesson_id}/content`)
               }
             >
-              Content Blocks
+              <FolderOpen className="h-4 w-4 mr-1" />
+              Content
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Are you sure you want to delete this lesson?",
+                  )
+                ) {
+                  deleteMutation.mutate(lesson.lesson_id);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
             </Button>
           </div>
         );
@@ -152,7 +148,13 @@ export default function Lessons() {
       <DataTable columns={columns} data={lessons} searchKey="lesson_name" />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <LessonForm lesson={editingLesson} onSuccess={() => setOpen(false)} />
+        <LessonForm 
+          lesson={editingLesson} 
+          onSuccess={() => {
+            setOpen(false);
+            setEditingLesson(null);
+          }} 
+        />
       </Dialog>
     </div>
   );
