@@ -19,6 +19,29 @@ import { API_BASE_URL } from "@/lib/constants";
 export default function Lessons() {
   const [open, setOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const deleteMutation = useMutation({
+    mutationFn: async (lessonId: string) => {
+      await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
+        lesson_id: lessonId,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [API_BASE_URL + "/api/list-lessons"] });
+      toast({
+        title: "Lesson deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error deleting lesson",
+        description: error.message,
+      });
+    },
+  });
 
   const { data: lessons = [] } = useQuery({ 
     queryKey: [API_BASE_URL+"/api/list-lessons"],
@@ -75,27 +98,7 @@ export default function Lessons() {
                   className="text-red-600"
                   onClick={() => {
                     if (window.confirm("Are you sure you want to delete this lesson?")) {
-                      const deleteMutation = useMutation({
-                        mutationFn: async () => {
-                          await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
-                            lesson_id: lesson.lesson_id,
-                          });
-                        },
-                        onSuccess: () => {
-                          queryClient.invalidateQueries({ queryKey: [API_BASE_URL + "/api/list-lessons"] });
-                          toast({
-                            title: "Lesson deleted successfully",
-                          });
-                        },
-                        onError: (error) => {
-                          toast({
-                            variant: "destructive",
-                            title: "Error deleting lesson",
-                            description: error.message,
-                          });
-                        },
-                      });
-                      deleteMutation.mutate();
+                      deleteMutation.mutate(lesson.lesson_id);
                     }
                   }}
                 >
