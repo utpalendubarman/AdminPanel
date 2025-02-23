@@ -49,6 +49,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
     values: {
       lesson_name: lesson?.lesson_name || "",
       board: lesson?.board || "",
+      summary: lesson?.summary || "",
       status: lesson?.status || "Active",
       subject_id: lesson?.subject_id || "",
       course_id: lesson?.course_id || "",
@@ -158,6 +159,19 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
           />
           <FormField
             control={form.control}
+            name="summary"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Summary</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="board"
             render={({ field }) => (
               <FormItem>
@@ -252,7 +266,6 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    
                     {courses.map((course) => (
                       <SelectItem
                         key={course.course_id}

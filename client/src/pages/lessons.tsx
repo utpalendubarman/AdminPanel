@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DataTable } from "@/components/shared/data-table";
@@ -61,6 +60,10 @@ export default function Lessons() {
       header: "Lesson Name",
     },
     {
+      accessorKey: "summary",
+      header: "Lesson Summary",
+    },
+    {
       accessorKey: "thumbnail",
       header: "Image",
       cell: ({ row }) =>
@@ -113,9 +116,7 @@ export default function Lessons() {
               size="sm"
               onClick={() => {
                 if (
-                  window.confirm(
-                    "Are you sure you want to delete this lesson?",
-                  )
+                  window.confirm("Are you sure you want to delete this lesson?")
                 ) {
                   deleteMutation.mutate(lesson.lesson_id);
                 }
@@ -148,12 +149,12 @@ export default function Lessons() {
       <DataTable columns={columns} data={lessons} searchKey="lesson_name" />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <LessonForm 
-          lesson={editingLesson} 
+        <LessonForm
+          lesson={editingLesson}
           onSuccess={() => {
             setOpen(false);
             setEditingLesson(null);
-          }} 
+          }}
         />
       </Dialog>
     </div>
