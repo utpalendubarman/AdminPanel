@@ -60,7 +60,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
     mutationFn: async () => {
       if (!lesson) return;
       await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
-        lesson_id: lesson.id,
+        lesson_id: lesson.lesson_id,
       });
     },
     onSuccess: () => {
@@ -105,7 +105,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
     mutationFn: async (data: typeof form.getValues) => {
       if (lesson) {
         await apiRequest("POST", API_BASE_URL + "/api/edit-lesson", {
-          lesson_id: lesson.id,
+          lesson_id: lesson.lesson_id,
           ...data,
         });
       } else {
