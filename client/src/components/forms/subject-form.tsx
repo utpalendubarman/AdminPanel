@@ -1,6 +1,5 @@
-
-import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,92 +9,123 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/hooks/use-toast";
-import { insertSubjectSchema } from "@shared/schema";
-import type { Subject, Course } from "@shared/schema";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { API_BASE_URL } from "@/lib/constants";
-import { queryClient } from "@/lib/queryClient";
-import { ImageUploader } from "@/components/shared/image-uploader";
+import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { insertSubjectSchema, type Subject } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SubjectFormProps {
-  subject: Subject | null;
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  subject?: Subject;
 }
 
-export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
+export function SubjectForm({ onSuccess, subject }: SubjectFormProps) {
   const { toast } = useToast();
-  
+
   const form = useForm({
     resolver: zodResolver(insertSubjectSchema),
-    defaultValues: subject || {
-      subject_name: "",
-      course_id: "",
-      status: "Active",
-      thumbnail: "",
+    defaultValues: {
+      subject_name: subject?.subject_name ?? "",
+      course_id: subject?.course_id ?? "",
+      thumbnail_url: subject?.thumbnail_url ?? "",
     },
   });
 
-  const { data: courses = [] } = useQuery<Course[]>({
-    queryKey: [API_BASE_URL+"/api/list-courses"]
+  const { data: courses } = useQuery({
+    queryKey: ["courses"],
+    queryFn: () => apiRequest("/api/courses").then((res) => res.json()),
   });
 
-  const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch(API_BASE_URL + (subject ? "/api/edit-subject" : "/api/create-subject"), {
+  const { mutate, isPending } = useMutation({
+    mutationFn: (values: Subject) => {
+      if (subject) {
+        return apiRequest(`/api/subjects/${subject.id}`, {
+          method: "PUT",
+          body: JSON.stringify(values),
+        });
+      }
+      return apiRequest("/api/subjects", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(subject ? { ...data, subject_id: subject.subject_id } : data),
+        body: JSON.stringify(values),
       });
-      if (!response.ok) throw new Error("Failed to save subject");
-      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-subjects"] });
-      toast({ title: `Subject ${subject ? "updated" : "created"} successfully` });
-      onSuccess();
-      if (!subject) form.reset();
+      toast({
+        title: subject ? "Subject updated" : "Subject created",
+        description: subject
+          ? "The subject has been updated successfully"
+          : "The subject has been created successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["subjects"] });
+      onSuccess?.();
+      form.reset();
     },
-    onError: () => {
-      toast({ title: "Failed to save subject", variant: "destructive" });
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>
-          {subject ? "Edit Subject" : "Create Subject"}
-        </DialogTitle>
+        <DialogTitle>{subject ? "Edit Subject" : "Create Subject"}</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-          className="grid grid-cols-2 gap-4"
+          onSubmit={form.handleSubmit((values) => mutate(values))}
+          className="space-y-4"
         >
-          <div className="col-span-2">
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="thumbnail"
+              name="subject_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
+                  <FormLabel>Subject Name</FormLabel>
                   <FormControl>
-                    <ImageUploader
-                      value={field.value}
-                      onChange={field.onChange}
-                      onRemove={() => field.onChange("")}
-                    />
+                    <Input {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="course_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Course</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {courses?.map((course: any) => (
+                        <SelectItem key={course.id} value={course.id}>
+                          {course.course_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -104,76 +134,24 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
 
           <FormField
             control={form.control}
-            name="subject_name"
+            name="thumbnail_url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subject Name</FormLabel>
+                <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <ImageUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="course_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Course</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a course" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {courses.map((course) => (
-                      <SelectItem key={course.course_id} value={course.course_id}>
-                        {course.course_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="col-span-2 flex justify-end">
-            <Button type="submit" disabled={mutation.isPending}>
-              {subject ? "Update" : "Create"} Subject
-            </Button>
-          </div>
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? "Loading..." : subject ? "Update Subject" : "Create Subject"}
+          </Button>
         </form>
       </Form>
     </DialogContent>
