@@ -16,8 +16,14 @@ export default function Lessons() {
   const { data: lessons = [] } = useQuery({ 
     queryKey: [API_BASE_URL+"/api/list-lessons"],
     queryFn: async () => {
-      const res = await apiRequest("GET", API_BASE_URL+"/api/list-lessons");
-      return res.json();
+      const response = await fetch(API_BASE_URL+"/api/list-lessons", {
+        method: 'GET',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch lessons');
+      }
+      return response.json();
     }
   });
 
