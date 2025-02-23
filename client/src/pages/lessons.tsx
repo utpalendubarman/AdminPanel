@@ -14,7 +14,11 @@ export default function Lessons() {
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   const { data: lessons = [] } = useQuery({ 
-    queryKey: [API_BASE_URL+"/api/list-lessons"]
+    queryKey: [API_BASE_URL+"/api/list-lessons"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", API_BASE_URL+"/api/list-lessons");
+      return res.json();
+    }
   });
 
   const columns: ColumnDef<Lesson>[] = [
