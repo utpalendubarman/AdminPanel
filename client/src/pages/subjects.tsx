@@ -31,6 +31,14 @@ export default function Subjects() {
     queryKey: [API_BASE_URL + "/api/list-subjects"],
   });
 
+  const { data: courses = [] } = useQuery<Course[]>({
+    queryKey: [API_BASE_URL + "/api/list-courses"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", API_BASE_URL + "/api/list-courses");
+      return response.json();
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (subject_id: string) => {
       const response = await fetch(API_BASE_URL + "/api/delete-subject", {
