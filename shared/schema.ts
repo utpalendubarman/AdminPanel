@@ -34,6 +34,7 @@ export const subjects = pgTable("subjects", {
 export const lessons = pgTable("lessons", {
   id: uuid("lesson_id").defaultRandom().primaryKey(),
   lesson_name: text("lesson_name").notNull(),
+  summary: text("summary"),
   board: text("board").notNull(), 
   status: text("status").notNull(),
   subject_id: text("subject_id").notNull(),
