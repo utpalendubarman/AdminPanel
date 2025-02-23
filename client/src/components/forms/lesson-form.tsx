@@ -11,14 +11,25 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { insertLessonSchema, type Lesson, type Course, type Subject } from "@shared/schema";
+import {
+  insertLessonSchema,
+  type Lesson,
+  type Course,
+  type Subject,
+} from "@shared/schema";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -48,10 +59,14 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!lesson) return;
-      await apiRequest("POST", API_BASE_URL+"/api/delete-lesson", { lesson_id: lesson.id });
+      await apiRequest("POST", API_BASE_URL + "/api/delete-lesson", {
+        lesson_id: lesson.id,
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
+      queryClient.invalidateQueries({
+        queryKey: [API_BASE_URL + "/api/list-lessons"],
+      });
       toast({
         title: "Lesson deleted successfully",
       });
@@ -67,38 +82,40 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
   });
 
   const { data: courses = [] } = useQuery<Course[]>({
-    queryKey: [API_BASE_URL+"/api/list-courses"],
+    queryKey: [API_BASE_URL + "/api/list-courses"],
     queryFn: async () => {
-      const response = await fetch(API_BASE_URL+"/api/list-courses", {
-        credentials: 'include'
+      const response = await fetch(API_BASE_URL + "/api/list-courses", {
+        credentials: "include",
       });
       return response.json();
-    }
+    },
   });
 
   const { data: subjects = [] } = useQuery<Subject[]>({
-    queryKey: [API_BASE_URL+"/api/list-subjects"],
+    queryKey: [API_BASE_URL + "/api/list-subjects"],
     queryFn: async () => {
-      const response = await fetch(API_BASE_URL+"/api/list-subjects", {
-        credentials: 'include'
+      const response = await fetch(API_BASE_URL + "/api/list-subjects", {
+        credentials: "include",
       });
       return response.json();
-    }
+    },
   });
 
   const mutation = useMutation({
     mutationFn: async (data: typeof form.getValues) => {
       if (lesson) {
-        await apiRequest("POST", API_BASE_URL+"/api/edit-lesson", {
+        await apiRequest("POST", API_BASE_URL + "/api/edit-lesson", {
           lesson_id: lesson.id,
           ...data,
         });
       } else {
-        await apiRequest("POST", API_BASE_URL+"/api/create-lesson", data);
+        await apiRequest("POST", API_BASE_URL + "/api/create-lesson", data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_BASE_URL+"/api/list-lessons"] });
+      queryClient.invalidateQueries({
+        queryKey: [API_BASE_URL + "/api/list-lessons"],
+      });
       toast({
         title: `Lesson ${lesson ? "updated" : "created"} successfully`,
       });
@@ -113,15 +130,13 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
     },
   });
 
-  const boards = ['CBSE', 'ICSE', 'ISC', 'IGCSE', 'WBBSE'];
-  const statuses = ['Active', 'Inactive'];
+  const boards = ["CBSE", "ICSE", "ISC", "IGCSE", "WBBSE"];
+  const statuses = ["Active", "Inactive"];
 
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>
-          {lesson ? "Edit Lesson" : "Create Lesson"}
-        </DialogTitle>
+        <DialogTitle>{lesson ? "Edit Lesson" : "Create Lesson"}</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form
@@ -147,7 +162,10 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Board</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a board" />
@@ -195,20 +213,25 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Subject</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""}>
+
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a subject" />
+                      <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {subjects.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id}>
+                      <SelectItem
+                        key={subject.subject_id}
+                        value={subject.subject_name}
+                      >
                         {subject.subject_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -219,15 +242,22 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Course</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a course" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    
                     {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id}>
+                      <SelectItem
+                        key={course.course_id}
+                        value={course.course_name}
+                      >
                         {course.course_name}
                       </SelectItem>
                     ))}
@@ -244,25 +274,24 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
               <FormItem className="col-span-2">
                 <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
-                  <ImageUpload 
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+                  <ImageUpload value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="col-span-2 flex justify-between">
-            <Button type="submit">
-              {lesson ? "Update" : "Create"}
-            </Button>
+            <Button type="submit">{lesson ? "Update" : "Create"}</Button>
             {lesson && (
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 variant="destructive"
                 onClick={() => {
-                  if (window.confirm('Are you sure you want to delete this lesson?')) {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to delete this lesson?",
+                    )
+                  ) {
                     deleteMutation.mutate();
                   }
                 }}
