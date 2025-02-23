@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { insertLessonSchema, type Lesson } from "@shared/schema";
+import { insertLessonSchema, type Lesson, type Course, type Subject } from "@shared/schema";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +44,26 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
       course_id: "",
       thumbnail: "",
     },
+  });
+
+  const { data: courses = [] } = useQuery<Course[]>({
+    queryKey: [API_BASE_URL+"/api/list-courses"],
+    queryFn: async () => {
+      const response = await fetch(API_BASE_URL+"/api/list-courses", {
+        credentials: 'include'
+      });
+      return response.json();
+    }
+  });
+
+  const { data: subjects = [] } = useQuery<Subject[]>({
+    queryKey: [API_BASE_URL+"/api/list-subjects"],
+    queryFn: async () => {
+      const response = await fetch(API_BASE_URL+"/api/list-subjects", {
+        credentials: 'include'
+      });
+      return response.json();
+    }
   });
 
   const mutation = useMutation({
@@ -71,6 +92,9 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
       });
     },
   });
+
+  const boards = ['CBSE', 'ICSE', 'ISC', 'IGCSE', 'WBBSE'];
+  const statuses = ['Active', 'Inactive'];
 
   return (
     <DialogContent>
@@ -103,9 +127,20 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Board</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a board" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {boards.map((board) => (
+                      <SelectItem key={board} value={board}>
+                        {board}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -116,9 +151,20 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {statuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -128,10 +174,21 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             name="subject_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subject ID</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <FormLabel>Subject</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a subject" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {subjects.map((subject) => (
+                      <SelectItem key={subject.id} value={subject.id}>
+                        {subject.subject_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -139,38 +196,32 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
           <FormField
             control={form.control}
             name="course_id"
-            render={({ field }) => {
-              const { data: courses = [] } = useQuery({ 
-                queryKey: [API_BASE_URL+"/api/list-courses"],
-              });
-              
-              return (
-                <FormItem>
-                  <FormLabel>Course</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a course" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.id}>
-                          {course.course_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Course</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a course" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id}>
+                        {course.course_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
           <FormField
             control={form.control}
             name="thumbnail"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-2">
                 <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
                   <ImageUpload 
@@ -182,7 +233,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="col-span-2">
             {lesson ? "Update" : "Create"}
           </Button>
         </form>
