@@ -147,7 +147,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Board</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a board" />
@@ -195,7 +195,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Subject</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a subject" />
@@ -219,7 +219,7 @@ export function LessonForm({ lesson, onSuccess }: LessonFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Course</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a course" />
