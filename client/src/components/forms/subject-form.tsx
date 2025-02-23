@@ -37,9 +37,10 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
     resolver: zodResolver(insertSubjectSchema),
     defaultValues: {
       subject_name: "",
+      subject_image: "",
+      board: "",
       course_id: "",
       status: "Active",
-      thumbnail: "",
     },
   });
 
@@ -55,16 +56,18 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
     if (subject) {
       form.reset({
         subject_name: subject.subject_name,
+        subject_image: subject.subject_image,
+        board: subject.board,
         course_id: subject.course_id,
         status: subject.status,
-        thumbnail: subject.thumbnail,
       });
     } else {
       form.reset({
         subject_name: "",
+        subject_image: "",
+        board: "",
         course_id: "",
         status: "Active",
-        thumbnail: "",
       });
     }
   }, [subject, form]);
@@ -96,10 +99,11 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
     },
   });
 
+  const boards = ['CBSE', 'ICSE', 'ISC', 'IGCSE', 'WBBSE'];
   const statuses = ['Active', 'Inactive'];
 
   return (
-    <DialogContent>
+    <DialogContent className="max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>
           {subject ? "Edit Subject" : "Create Subject"}
@@ -130,15 +134,30 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
               <FormItem>
                 <FormLabel>Course</FormLabel>
                 <FormControl>
-                  <select 
-                    {...field} 
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     <option value="">Select Course</option>
                     {courses.map(course => (
                       <option key={course.course_id} value={course.course_id}>
                         {course.course_name}
                       </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="board"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Board</FormLabel>
+                <FormControl>
+                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                    <option value="">Select Board</option>
+                    {boards.map(board => (
+                      <option key={board} value={board}>{board}</option>
                     ))}
                   </select>
                 </FormControl>
@@ -166,10 +185,10 @@ export function SubjectForm({ subject, onSuccess }: SubjectFormProps) {
           />
           <FormField
             control={form.control}
-            name="thumbnail"
+            name="subject_image"
             render={({ field }) => (
               <FormItem className="col-span-2">
-                <FormLabel>Thumbnail</FormLabel>
+                <FormLabel>Image</FormLabel>
                 <FormControl>
                   <ImageUpload
                     value={field.value}
