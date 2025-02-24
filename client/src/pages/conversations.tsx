@@ -1,25 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChatInterface } from "@/components/chat/chat-interface";
 import type { Teacher, Lesson } from "@shared/schema";
-
+import { API_BASE_URL } from "@/lib/constants";
 export default function Conversations() {
   const { data: teachers = [] } = useQuery<Teacher[]>({ 
-    queryKey: ["/api/list-teachers"]
+    queryKey: [API_BASE_URL+"/api/list-teachers"]
   });
   
   const { data: lessons = [] } = useQuery<Lesson[]>({ 
-    queryKey: ["/api/list-lessons"]
+    queryKey: [API_BASE_URL+"/api/list-lessons"]
   });
-
+ 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">AI Teacher Chat</h1>
-        <p className="text-muted-foreground mt-1">
-          Chat with AI teachers and evaluate their performance
-        </p>
+    <div className="p-4">
+      <div className="mb-3">
+        <h3 className="text-3xl font-bold">AI Teacher Chat</h3>
       </div>
-
       <ChatInterface teachers={teachers} lessons={lessons} />
     </div>
   );

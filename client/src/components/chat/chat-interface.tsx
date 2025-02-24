@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { API_BASE_URL } from "@/lib/constants";
+import { useRef, useEffect } from "react"; // Import useRef and useEffect
 import { 
   Select,
   SelectContent,
@@ -46,46 +48,153 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+  
 
-  const handleSend = () => {
+  const messagesEndRef = useRef<HTMLDivElement | null>(null); // Create a reference
+
+// Function to scroll to the bottom
+const scrollToBottom = () => {
+  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+};
+
+// Auto-scroll when messages update
+useEffect(() => {
+  scrollToBottom();
+}, [messages]);
+
+
+  const handleSend = async () => {
     if (!inputValue.trim()) return;
-
-    // Play send message sound
-    const audio = new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_46cecae684.mp3");
-    audio.play();
-
-    // Add user message
+  
+    // Add user message to the chat
     const userMessage: Message = {
       id: crypto.randomUUID(),
       content: inputValue,
       isUser: true,
       timestamp: new Date(),
     };
-
-    // Simulate teacher response
-    const teacherResponse: Message = {
-      id: crypto.randomUUID(),
-      content: `This is a simulated response from ${selectedTeacher?.name || 'the teacher'}. The response will include the lesson context from "${selectedLesson?.lesson_name || 'selected lesson'}" once integrated with the AI backend.`,
+  
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+  
+    // Add a temporary "Typing..." message
+    const typingMessage: Message = {
+      id: "typing", // Unique ID to identify and replace later
+      content: "Typing...",
       isUser: false,
       timestamp: new Date(),
     };
+    setMessages((prev) => [...prev, typingMessage]);
+  
+    // Prepare API request data
+    const requestData = {
+      model_id: 6, // Dynamically set this if required
+      lesson_id: selectedLesson?.id || "default_lesson_id",
+      query: inputValue,
+    };
+  
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      const firstImage = data.res.images?.[0] || null; // Extract first image if available
+  
+      // Add the response message from the API
+      const teacherResponse: Message & { image?: string } = {
+        id: crypto.randomUUID(),
+        content: data.res.response || "No response from server.",
+        isUser: false,
+        timestamp: new Date(),
+        image: firstImage, // Attach image if available
+      };
+  
+      // Remove "Typing..." message and add real response
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.id !== "typing"),
+        teacherResponse,
+      ]);
+    } catch (error) {
+      console.error("Error fetching chat response:", error);
+  
+      // Remove "Typing..." message and add error message
+      const errorMessage: Message = {
+        id: crypto.randomUUID(),
+        content: "Failed to get a response. Please try again.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+  
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.id !== "typing"),
+        errorMessage,
+      ]);
+    }
+  };
+  
+  
+  
 
-    setMessages(prev => [...prev, userMessage, teacherResponse]);
-    setInputValue("");
+  const [isTTSLoading, setIsTTSLoading] = useState(false); // State to track TTS loading
+
+  const playTTS = async (text: string, voiceName = "en-IN-Chirp-HD-F") => {
+    const apiKey = "AIzaSyB0nXo6uSyfSo19H730bATIOFmWhlV2ZHY";
+
+    if (!apiKey) {
+      console.error("Google TTS API key is missing.");
+      return;
+    }
+
+    setIsTTSLoading(true); // Start loading
+
+    const requestData = {
+      input: { text },
+      voice: { languageCode: "en-IN", name: voiceName, ssmlGender: "NEUTRAL" },
+      audioConfig: { audioEncoding: "MP3" },
+    };
+
+    try {
+      const response = await fetch(
+        `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`TTS request failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const audioUrl = `data:audio/mp3;base64,${data.audioContent}`;
+      const audio = new Audio(audioUrl);
+
+      audio.play();
+      audio.onended = () => setIsTTSLoading(false); // Stop loading when audio ends
+    } catch (error) {
+      console.error("Error with Google TTS:", error);
+      setIsTTSLoading(false);
+    }
   };
 
-  const playTTS = (text: string) => {
-    // In a real implementation, this would call a TTS service
-    const utterance = new SpeechSynthesisUtterance(text);
-    window.speechSynthesis.speak(utterance);
-  };
+  
 
   return (
     <div className="flex h-[calc(100vh-10rem)] overflow-hidden rounded-lg border bg-white">
       {/* Teacher Selection Sidebar */}
       <div className="w-80 border-r bg-muted/10">
         <div className="p-4 border-b">
-          <h3 className="font-semibold mb-4">AI Teachers</h3>
           <div className="space-y-2">
             {teachers.map(teacher => (
               <button
@@ -137,7 +246,7 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
               </h3>
               {selectedTeacher && (
                 <p className="text-sm text-muted-foreground">
-                  {selectedTeacher.voice} Voice
+                  {selectedTeacher.short_bio}
                 </p>
               )}
             </div>
@@ -182,46 +291,59 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
 
         {/* Messages Area */}
         <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {messages.map(message => (
-              <div
-                key={message.id}
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-              >
-                {!message.isUser && selectedTeacher && (
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={selectedTeacher.image} alt={selectedTeacher.name} />
-                    <AvatarFallback>{selectedTeacher.name[0]}</AvatarFallback>
-                  </Avatar>
-                )}
+            <div className="space-y-4">
+              {messages.map((message) => (
                 <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
-                    message.isUser
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  }`}
+                  key={message.id}
+                  className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
                 >
-                  <div className="flex items-start gap-2">
-                    <p className="leading-relaxed">{message.content}</p>
-                    {!message.isUser && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => playTTS(message.content)}
-                        className="h-6 w-6 p-0 -mt-1"
-                      >
-                        <Volume2 className="h-4 w-4" />
-                      </Button>
+                  {!message.isUser && selectedTeacher && (
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage src={selectedTeacher.image} alt={selectedTeacher.name} />
+                      <AvatarFallback>{selectedTeacher.name[0]}</AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div
+                    className={`max-w-[70%] rounded-lg p-3 ${
+                      message.isUser ? "bg-primary text-primary-foreground" : "bg-muted"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <p className="leading-relaxed">{message.content}</p>
+                      {!message.isUser && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => playTTS(message.content,selectedTeacher.voice)}
+                          className="h-6 w-6 p-0 -mt-1"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {"image" in message && message.image && (
+                      <div className="mt-2">
+                        <img
+                          src={message.image}
+                          alt="Response Image"
+                          className="rounded-lg max-w-xs border"
+                        />
+                      </div>
                     )}
-                  </div>
-                  <div className="text-xs opacity-70 mt-1">
-                    {message.timestamp.toLocaleTimeString()}
+
+                    <div className="text-xs opacity-70 mt-1">
+                      {message.timestamp.toLocaleTimeString()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+              ))}
+              {/* Empty div for scrolling reference */}
+              <div ref={messagesEndRef}></div>
+            </div>
+          </ScrollArea>
+
+
 
         {/* Input Area */}
         <div className="p-4 border-t">
@@ -247,9 +369,33 @@ export function ChatInterface({ teachers, lessons }: ChatInterfaceProps) {
             <Button type="button" variant="ghost" size="icon">
               <Smile className="h-5 w-5 text-muted-foreground" />
             </Button>
-            <Button type="button" variant="ghost" size="icon">
-              <Mic className="h-5 w-5 text-muted-foreground" />
+            <Button type="button" variant="ghost" size="icon" disabled={isTTSLoading}>
+              {isTTSLoading ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-muted-foreground"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+              ) : (
+                <Mic className="h-5 w-5 text-muted-foreground" />
+              )}
             </Button>
+
             <Button type="submit" size="icon">
               <Send className="h-5 w-5" />
             </Button>
