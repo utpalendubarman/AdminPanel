@@ -105,7 +105,7 @@ export default function Lessons() {
               variant="outline"
               size="sm"
               onClick={() =>
-                (window.location.href = `/lessons/${lesson.lesson_id}/content`)
+                (window.location.href = `${API_BASE_URL}/admin/contents?lesson_id=${lesson.lesson_id}`)
               }
             >
               <FolderOpen className="h-4 w-4 mr-1" />
