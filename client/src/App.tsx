@@ -14,6 +14,7 @@ import Users from "@/pages/users";
 import Conversations from "@/pages/conversations";
 import AdminProfile from "@/pages/admin-profile";
 import LessonContent from "@/pages/lesson-content"; // Import added here
+import CMSDashboard from "@/pages/CMSDashboard";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
             <Route path="/conversations" component={Conversations} />
             <Route path="/admin-profile" component={AdminProfile} />
             <Route component={NotFound} />
+            <Route path="/cms-dashboard" component={CMSDashboard} />
           </Switch>
         </main>
       </div>

@@ -10,8 +10,26 @@ import type { Lesson } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { API_BASE_URL } from "@/lib/constants";
 import { LessonForm } from "@/components/forms/lesson-form";
+import { navigate } from "wouter/use-browser-location";
 
 export default function Lessons() {
+  const handleViewContents = async (lessonId: number) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/list-contents?lesson_id=${lessonId}`
+      );
+      const data = await response.json();
+  
+      // Store data in sessionStorage or state (if using context)
+      sessionStorage.setItem("lessonContents", JSON.stringify(data));
+  
+      // Redirect to CMS Dashboard
+      navigate("/cms-dashboard");
+    } catch (error) {
+      console.error("Error fetching lesson contents:", error);
+    }
+  };
+  
   const [open, setOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const queryClient = useQueryClient();
@@ -104,9 +122,7 @@ export default function Lessons() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                (window.location.href = `${API_BASE_URL}/admin/contents?lesson_id=${lesson.lesson_id}`)
-              }
+              onClick={() => handleViewContents(lesson.lesson_id)}
             >
               <FolderOpen className="h-4 w-4 mr-1" />
               Content
