@@ -15,10 +15,12 @@ import Conversations from "@/pages/conversations";
 import AdminProfile from "@/pages/admin-profile";
 import LessonContent from "@/pages/lesson-content"; // Import added here
 import CMSDashboard from "@/pages/CMSDashboard";
+import { ToastContainer } from "react-bootstrap";
 
 function Router() {
   return (
     <div className="flex h-screen">
+      <ToastContainer/>
       <Sidebar className="w-64 hidden md:block" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -33,8 +35,8 @@ function Router() {
             <Route path="/users" component={Users} />
             <Route path="/conversations" component={Conversations} />
             <Route path="/admin-profile" component={AdminProfile} />
-            <Route component={NotFound} />
             <Route path="/cms-dashboard" component={CMSDashboard} />
+            <Route component={NotFound} />
           </Switch>
         </main>
       </div>
